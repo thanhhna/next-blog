@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import cn from 'classnames';
-import Layout, { siteTitle } from '../components/layout';
-import utilStyles from '../styles/utils.module.css';
+import Layout, { siteTitle } from '../components/Layout';
+import utilStyles from '../styles/utils.module.scss';
 import { getSortedPostsData } from '../lib/posts';
-import Date from '../components/date';
+import Date from '../components/Date';
 
 export async function getStaticProps() {
   const allPostsData = getSortedPostsData();
@@ -21,14 +21,8 @@ export default function Home({ allPostsData }) {
       <Head>
         <title>{siteTitle}</title>
       </Head>
-      <section className={utilStyles.headingMd}>
-        <p>I'm Thanh. I like JavaScript.</p>
-        <p>
-          This is my little corner on the web.
-        </p>
-      </section>
       <section className={cn(utilStyles.headingMd, utilStyles.padding1px)}>
-        <h2 className={utilStyles.headingLg}>Blog</h2>
+        <h2 className={utilStyles.headingLg}>Posts</h2>
         <ul className={utilStyles.list}>
           {allPostsData.map(({id, date, title }) => (
             <li className={utilStyles.listItem} key={id}>

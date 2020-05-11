@@ -1,10 +1,12 @@
-import styles from './layout.module.css';
 import Head from 'next/head';
-import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
+import cn from 'classnames';
+import GoTop from './GoTop';
+import styles from './layout.module.scss';
+import utilStyles from '../styles/utils.module.scss';
 
-const name = 'Thanh Nguyen';
-export const siteTitle = `Thanh's corner`;
+const name = 'Thanh';
+export const siteTitle = 'Green season';
 
 function Layout({ children, home }) {
   return (
@@ -13,7 +15,7 @@ function Layout({ children, home }) {
         <link ref="icon" href="/favicon.ico" />
         <meta
           name="description"
-          content={`Thanh's personal little corner.`}
+          content={`Thanh Nguyen's personal site.`}
         />
         <meta
           property="og:image"
@@ -23,44 +25,22 @@ function Layout({ children, home }) {
         />
         <meta name="og:title" content={siteTitle} />
         <meta name="twitter:card" content="summary_large_image" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/solarized-light.min.css"></link>
       </Head>
-      <header className={styles.header}>
-        {home ? (
-          <>
-            <img
-              src="/images/ava.png" 
-              className={`${styles.headerHomeImage} ${utilStyles.borderCircle}`}
-              alt={name}
-            />
-            <h1 className={utilStyles.heading2Xl}>{name}</h1>
-          </>
-        ) : (
-          <>
-            <Link href="/">
-              <a>
-                <img
-                  src="/images/ava.png" 
-                  className={`${styles.headerImage} ${utilStyles.borderCircle}`}
-                  alt={name}
-                />
-              </a>
-            </Link>
-            <h2 className={utilStyles.headingLg}>
-              <Link href="/">
-                <a className={utilStyles.colorInherit}>{name}</a>
-              </Link>
-            </h2>
-          </>
-        )}
-      </header>
-      <main>{children}</main>
-      {!home && (
-        <div className={styles.backToHome}>
-          <Link href="/">
-            <a>Back to home</a>
-          </Link>
-        </div>
-      )}
+      <main className={styles.main}>
+        <div className={styles.content}>{children}</div>
+        <nav className={cn(styles.nav, utilStyles.textCenter)}>
+          <img
+            src="/images/profile.jpg" 
+            className={cn(styles.headerHomeImage, utilStyles.borderCircle)}
+            alt={name}
+          />
+          <h1 className={utilStyles.headingLg}>{name}</h1>
+          <Link href="/"><a className={utilStyles.textBold}>Home</a></Link>
+        </nav>
+      </main>
+      <GoTop />
     </div>
   );
 }
