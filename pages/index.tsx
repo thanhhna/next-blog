@@ -1,9 +1,8 @@
 import React from 'react';
-import Head from 'next/head';
 import Link from 'next/link';
 import cn from 'classnames';
 
-import Layout, { siteTitle } from 'components/Layout';
+import Layout from 'components/Layout';
 import { getSortedPostsData } from 'lib/posts';
 import Date from 'components/Date';
 import utilStyles from 'styles/utils.module.scss';

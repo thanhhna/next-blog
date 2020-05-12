@@ -28,7 +28,7 @@ export default function GoTop() {
     return (() => {
       window.removeEventListener('scroll', handleScroll);
     });
-  })
+  });
 
   return isVisible ? (
     <button onClick={handleClick} className={styles.goTop}><i className="fa fa-angle-up"></i></button>
