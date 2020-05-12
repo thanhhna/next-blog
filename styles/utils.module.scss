@@ -25,6 +25,10 @@
   line-height: 1.5;
 }
 
+.headingNm {
+  font-size: 1rem;
+}
+
 .borderCircle {
   border-radius: 9999px;
 }
@@ -57,4 +61,19 @@
 
 .textBold {
   font-weight: 600;
+}
+
+.link {
+  border: none;
+  background-color: transparent;
+  color: #0070f3;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }

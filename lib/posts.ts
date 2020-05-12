@@ -7,8 +7,12 @@ import highlight from 'remark-highlight.js';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
+interface PostData {
+  date: string,
+  title: string
+}
 
-export async function getPostData(id) {
+export async function getPostData(id: string) {
   const fullPath = path.join(postsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
@@ -23,7 +27,7 @@ export async function getPostData(id) {
   return {
     id,
     contentHtml,
-    ...matterResult.data
+    ...(matterResult.data as PostData)
   };
 }
 
@@ -51,7 +55,7 @@ export function getSortedPostsData() {
 
     return {
       id,
-      ...matterResults.data
+      ...(matterResults.data as PostData)
     };
   });
 

@@ -48,6 +48,13 @@
   @media (min-width: 768px) {
     flex: 0 0 12em;
   }
+
+  .link {
+    & > * {
+      display: block;
+      margin-top: 1rem;
+    }
+  }
 }
 
 .nav {

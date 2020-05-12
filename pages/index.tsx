@@ -1,10 +1,12 @@
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import cn from 'classnames';
-import Layout, { siteTitle } from '../components/Layout';
-import utilStyles from '../styles/utils.module.scss';
-import { getSortedPostsData } from '../lib/posts';
-import Date from '../components/Date';
+
+import Layout, { siteTitle } from 'components/Layout';
+import { getSortedPostsData } from 'lib/posts';
+import Date from 'components/Date';
+import utilStyles from 'styles/utils.module.scss';
 
 export async function getStaticProps() {
   const allPostsData = getSortedPostsData();
@@ -15,19 +17,28 @@ export async function getStaticProps() {
   };
 }
 
-export default function Home({ allPostsData }) {
+export default function Home(
+  {
+    allPostsData
+  }: {
+    allPostsData: {
+      date: string,
+      title: string,
+      id: string
+    }[]
+  }
+) {
   return (
     <Layout home>
-      <Head>
-        <title>{siteTitle}</title>
-      </Head>
-      <section className={cn(utilStyles.headingMd, utilStyles.padding1px)}>
+      <section className={cn(utilStyles.headingMd)}>
         <h2 className={utilStyles.headingLg}>Posts</h2>
         <ul className={utilStyles.list}>
           {allPostsData.map(({id, date, title }) => (
-            <li className={utilStyles.listItem} key={id}>
+            <li className={cn(utilStyles.listItem)} key={id}>
               <Link href="/posts/[id]" as={`/posts/${id}`}>
-                <a>{title}</a>
+                <button className={cn(utilStyles.link, utilStyles.headingMd)}>
+                  {title}
+                </button>
               </Link>
               <br />
               <small className={utilStyles.lightText}>
