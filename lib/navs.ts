@@ -6,5 +6,9 @@ export default [
   {
     path: '/about',
     name: 'About'
+  },
+  {
+    path: '/apps',
+    name: 'Apps'
   }
-]
+];

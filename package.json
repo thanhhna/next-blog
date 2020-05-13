@@ -9,9 +9,11 @@
     "export": "next build && next export"
   },
   "dependencies": {
+    "@types/jquery": "^3.3.38",
     "classnames": "^2.2.6",
     "date-fns": "^2.13.0",
     "gray-matter": "^4.0.2",
+    "jquery": "^3.5.1",
     "next": "9.3.5",
     "react": "16.13.1",
     "react-dom": "16.13.1",
