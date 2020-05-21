@@ -16,7 +16,7 @@ export default function Apps() {
   return (
     <Layout title="My Apps">
       <p>
-        I occasionally build small apps, not for any obvious reasons.
+        I occasionally build small apps.
       </p>
       <p>
         Check them out if you like.
