@@ -4,3 +4,5 @@
 declare module 'remark-html';
 
 declare module 'remark-highlight.js';
+
+declare module 'range';

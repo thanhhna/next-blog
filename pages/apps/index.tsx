@@ -8,7 +8,13 @@ import utilStyles from 'styles/utils.module.scss';
 const apps = [
   {
     name: 'Gomoku',
-    path: 'gomoku'
+    path: 'gomoku',
+    description: 'A bigger version of Tic-tac-toe'
+  },
+  {
+    name: 'Sequence',
+    path: 'sequence',
+    description: 'Select numbers by order from smaller to bigger where number is placed randomly in a sheet'
   }
 ];
 
@@ -29,6 +35,7 @@ export default function Apps() {
                 {app.name}
               </button>
             </Link>
+            <p>{app.description}</p>
           </li>
         ))}
       </ul>

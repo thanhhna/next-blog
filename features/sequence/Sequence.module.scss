@@ -1,0 +1,41 @@
+.container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .board {
+    // background: #ddd;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .box {
+      // border: 1px solid;
+      display: inline-block;
+
+      .dot {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        border-radius: 99999px;
+        font-size: 35px;
+        text-align: center;
+        font-family: 'Architects Daughter', cursive;
+        
+        span {
+          z-index: 1;
+          position: absolute;
+          height: 100%;
+          width: 100%;
+
+          &.checked {
+            background: url('/images/circle.png') no-repeat;
+            background-size: 80px;
+            background-position: center;
+          }
+        }
+      }
+    }
+  }
+}
