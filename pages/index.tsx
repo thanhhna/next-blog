@@ -23,6 +23,7 @@ export default function Home(
     allPostsData: {
       date: string,
       title: string,
+      publish: boolean,
       id: string
     }[]
   }

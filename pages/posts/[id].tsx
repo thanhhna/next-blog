@@ -31,6 +31,7 @@ interface PostProps {
   postData: {
     title: string,
     date: string,
+    publish: boolean,
     contentHtml: string
   }
 }

@@ -9,7 +9,8 @@ const postsDirectory = path.join(process.cwd(), 'posts');
 
 interface PostData {
   date: string,
-  title: string
+  title: string,
+  publish: boolean
 }
 
 export async function getPostData(id: string) {
@@ -59,7 +60,7 @@ export function getSortedPostsData() {
     };
   });
 
-  return allPostsData.sort((a, b) => {
+  return allPostsData.filter(p => p.publish).sort((a, b) => {
     if (a.date < b.date) {
       return 1;
     }

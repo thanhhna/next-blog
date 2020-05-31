@@ -19,7 +19,7 @@ export default function Apps() {
         I occasionally build small apps.
       </p>
       <p>
-        Check them out if you like.
+        Check them out.
       </p>
       <ul className={utilStyles.list}>
         {apps.map(app => (

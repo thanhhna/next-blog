@@ -1,6 +1,7 @@
 ---
 title: 'Regex cơ bản'
 date: '2018-06-11'
+publish: true
 ---
 
 ## Điều gì khiến bạn quan tâm tới Regex

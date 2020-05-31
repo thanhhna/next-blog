@@ -1,6 +1,7 @@
 ---
 title: 'Sử dụng Docker để chạy ứng dụng NodeJS'
 date: '2019-06-24'
+publish: true
 ---
 
 ## Mục đích

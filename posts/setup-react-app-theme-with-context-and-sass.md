@@ -1,6 +1,7 @@
 ---
 title: 'Thiết lập theme cho React app với Context API và SASS'
 date: '2020-05-07'
+publish: true
 ---
 
 ## Dark mode >< Light mode

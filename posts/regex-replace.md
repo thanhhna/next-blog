@@ -1,6 +1,7 @@
 ---
 title: 'Sử dụng Regex để thay thế văn bản'
 date: '2019-06-04'
+publish: true
 ---
 
 # Replace in Regex
