@@ -56,7 +56,7 @@ export default function Board(props: BoardProps) {
   useEffect(() => {
     function handleLostGame() {
       setPlaying(false);
-      setMessage('Time run out. You lost!');
+      setMessage('Time ran out. You lost!');
       clearInterval(timerInterval.current);
     }
     if (timer <= 0 && playing) {
