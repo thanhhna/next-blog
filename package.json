@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next build && next export"
+    "export": "next build && next export",
+    "deploy": "next build && next export && rimraf ../client/* && ncp ./out/ ../client/"
   },
   "dependencies": {
     "@types/jquery": "^3.3.38",
@@ -15,6 +16,7 @@
     "date-fns": "^2.13.0",
     "gray-matter": "^4.0.2",
     "jquery": "^3.5.1",
+    "ncp": "^2.0.0",
     "next": "9.3.5",
     "random": "^2.2.0",
     "range": "^0.0.3",
@@ -23,6 +25,7 @@
     "remark": "^12.0.0",
     "remark-highlight.js": "^6.0.0",
     "remark-html": "^11.0.1",
+    "rimraf": "^3.0.2",
     "roughjs": "^4.3.1",
     "sass": "^1.26.5"
   },
