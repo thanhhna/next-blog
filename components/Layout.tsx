@@ -41,6 +41,15 @@ function Layout(
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/solarized-light.min.css" />
         <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet" />
 
+        {
+          process.env.NEXT_PUBLIC_ENV === 'prod' ? (
+            <> 
+              <script>var clicky_site_ids = clicky_site_ids || []; clicky_site_ids.push(101231340);</script>
+              <script async src="//static.getclicky.com/js"></script>    
+            </>
+          ) : null
+        }
+
         {title &&
           (
             <title>{title}</title>
