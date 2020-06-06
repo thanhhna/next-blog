@@ -3,6 +3,7 @@ import Layout from 'components/Layout';
 import { getAllPostIds, getPostData } from 'lib/posts';
 import Date from 'components/Date';
 import utilStyles from 'styles/utils.module.scss';
+import styles from './posts.module.scss';
 
 export async function getStaticPaths() {
   const paths = getAllPostIds();
@@ -39,7 +40,7 @@ interface PostProps {
 export default function Post({ postData }: PostProps) {
   return (
     <Layout title={postData.title}>
-      <article>
+      <article className={styles.article}>
         <h1 className={utilStyles.headingXl}>{postData.title}</h1>
         <div className={utilStyles.lightText}>
           <Date dateString={postData.date} />

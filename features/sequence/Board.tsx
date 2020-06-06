@@ -6,8 +6,7 @@ import styles from './Sequence.module.scss';
 import utilsStyle from 'styles/utils.module.scss';
 
 interface BoardProps {
-  gridSize: number,
-  boardSize: number,
+  gridWidth: number,
   boxesData: BoxData[],
   sequenceMaxNumber: number,
   onStartGame: () => void,
@@ -16,27 +15,30 @@ interface BoardProps {
   timeLimit: number
 }
 
+enum GameStatus {
+  idle,
+  playing,
+  lost,
+  won
+}
+
 export default function Board(props: BoardProps) {
+  console.log('run board');
   const {
-    gridSize,
-    boardSize,
     boxesData,
+    gridWidth,
     sequenceMaxNumber,
     onStartGame,
     onFinishGame,
-    onResetGame,
-    timeLimit
+    onResetGame, timeLimit
   } = props;
 
   const timerInterval = useRef<any>(undefined);
 
   const [checkedValues, setCheckedValues] = useState<number[]>([]);
   const [timer, setTimer] = useState(timeLimit);
-  const [playing, setPlaying] = useState(false);
-  const [message, setMessage] = useState('Find numbers by order from the smallest to the biggest. Let\'s play');
+  const [gameStatus, setGameStatus] = useState(GameStatus.idle);
   const [didReset, setDidReset] = useState(false);
-
-  const boxSize = boardSize / gridSize;
 
   useEffect(() => {
     function runTimer() {
@@ -44,29 +46,28 @@ export default function Board(props: BoardProps) {
         setTimer(timer => timer - 1);
       }, 1000);
     }
-    if (playing) {
+    if (gameStatus === GameStatus.playing) {
       runTimer();
     }
-    
+
     return function() {
       clearInterval(timerInterval.current);
     };
-  }, [playing, setTimer, timerInterval]);
+  }, [gameStatus, setTimer, timerInterval]);
 
   useEffect(() => {
     function handleLostGame() {
-      setPlaying(false);
-      setMessage('Time ran out. You lost!');
+      setGameStatus(GameStatus.lost);
       clearInterval(timerInterval.current);
     }
-    if (timer <= 0 && playing) {
+    if (timer <= 0 && gameStatus === GameStatus.playing) {
       handleLostGame();
     }
     if (timer <= Math.floor(timeLimit / 2) && !didReset) {
       onResetGame();
       setDidReset(true);
     }
-  }, [timer, timeLimit, onResetGame, playing, didReset]);
+  }, [timer, timeLimit, onResetGame, gameStatus, didReset]);
 
   function handleClick(pos: Position | undefined) {
     if (pos === undefined) {
@@ -84,7 +85,7 @@ export default function Board(props: BoardProps) {
     }
   }
 
-  const boxStyle = { width: boxSize, height: boxSize };
+  const boxStyle = { width: gridWidth, height: gridWidth };
 
   const boxes = boxesData.map(d => (
     <Box
@@ -99,10 +100,10 @@ export default function Board(props: BoardProps) {
   ));
 
   function handleStartGame() {
-    setPlaying(true);
+    setGameStatus(GameStatus.playing);
     setCheckedValues([]);
     onStartGame();
-    setTimer(timeLimit); 
+    setTimer(timeLimit);
     setDidReset(false);
   }
 
@@ -111,34 +112,51 @@ export default function Board(props: BoardProps) {
   }
 
   function handleFinishGame() {
-    setPlaying(false);
-    setMessage('You won!');
+    setGameStatus(GameStatus.won);
     onFinishGame();
   }
 
+  let message: string | React.ReactNode = '';
+
+  switch (gameStatus) {
+    case GameStatus.idle:
+      message = <><p>Find numbers by order from the smallest to the biggest.</p><p>Press Start to begin.</p></>;
+      break;
+    case GameStatus.won:
+      message = <p>You won :)</p>;
+      break;
+    case GameStatus.lost:
+      message = <p className={styles.lost}>You lost :(</p>;
+      break;
+    default:
+      break;
+  }
+
   return (
-    <div className={styles.container} >
-      { !playing && (
+    <>
+      { gameStatus !== GameStatus.playing && (
           <div className={styles.overlay}>
             <div className={styles.message}>{message}</div>
-            <button onClick={handleStartGame} className={utilsStyle.btn}>Start</button>
+            <button onClick={handleStartGame} className={utilsStyle.btn}>
+              {gameStatus === GameStatus.idle ? 'Start' : 'Play again'}
+            </button>
           </div>
         )
       }
       {
-        playing && (
+        gameStatus === GameStatus.playing && (
           <>
             <div className={styles.controlBoard}>
               <div className={cn(styles.timer, utilsStyle.primaryText)}>
                 Time: {timer}s
               </div>
             </div>
-            <div className={styles.board} style={{ height: boardSize, width: boardSize }}>
+            <div className={styles.board}>
               {boxes}
             </div>
           </>
         )
       }
-    </div>
+    </>
   );
 }
