@@ -23,7 +23,6 @@ enum GameStatus {
 }
 
 export default function Board(props: BoardProps) {
-  console.log('run board');
   const {
     boxesData,
     gridWidth,

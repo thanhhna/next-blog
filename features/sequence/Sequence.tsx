@@ -73,7 +73,6 @@ export default function Sequence() {
       if (isMobileOnly) {
         size.row = size.row - 1;
       }
-      console.log(element.width, element.height, size);
       setGridSize(size);
     }
   }, []);
@@ -85,8 +84,6 @@ export default function Sequence() {
       allCoordinates.push({ x, y });
     });
   });
-
-  console.log(allCoordinates);
 
   function genPositions () {
     const positions = randPositions(gameMode.sequenceMax, allCoordinates);
@@ -131,8 +128,6 @@ export default function Sequence() {
   }, [sequencePositions, allCoordinates, gridSize]);
 
   const boxesData: BoxData[] = genBoxData();
-
-  console.log(boxesData);
 
   function handleResetGame() {
     genPositions();
