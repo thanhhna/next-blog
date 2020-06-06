@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { isMobile } from 'react-device-detect';
+import { isMobileOnly } from 'react-device-detect';
 import range from 'range';
 import random from 'random';
 import Board from './Board';
 import { Coordinate, BoxData, Position } from './types';
 import styles from './Sequence.module.scss';
 
-const GRID_WIDTH = isMobile ? 40 : 70;
-const RANDOM_GAP = isMobile ? 10 : 20;
+const GRID_WIDTH = isMobileOnly ? 40 : 70;
+const RANDOM_GAP = isMobileOnly ? 10 : 20;
 
 interface GameMode {
   label: string,
@@ -70,7 +70,7 @@ export default function Sequence() {
       if (size.row <= 0) {
         size.row = DEFAULT_ROW_NUMBER;
       }
-      if (isMobile) {
+      if (isMobileOnly) {
         size.row = size.row - 1;
       }
       console.log(element.width, element.height, size);
