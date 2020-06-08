@@ -3,6 +3,7 @@ import Link from 'next/link';
 import cn from 'classnames';
 
 import Layout from 'components/Layout';
+import styles from './index.module.scss';
 import utilStyles from 'styles/utils.module.scss';
 
 const apps = [
@@ -21,24 +22,27 @@ const apps = [
 export default function Apps() {
   return (
     <Layout title="My Apps">
-      <p>
-        I occasionally build small apps.
-      </p>
-      <p>
-        Check them out.
-      </p>
-      <ul className={utilStyles.list}>
-        {apps.map(app => (
-          <li className={utilStyles.listItem} key={app.path}>
-            <Link href={`/apps/${app.path}`} as={`/apps/${app.path}`}>
-              <button className={cn(utilStyles.link, utilStyles.headingMd)}>
-                {app.name}
-              </button>
-            </Link>
-            <p>{app.description}</p>
-          </li>
-        ))}
-      </ul>
+      <div className={styles.apps}>
+        <h2 className={utilStyles.headingLg}>Apps</h2>
+        <p>
+          I occasionally build small apps.
+        </p>
+        <p>
+          Check them out.
+        </p>
+        <ul className={utilStyles.list}>
+          {apps.map(app => (
+            <li className={utilStyles.listItem} key={app.path}>
+              <Link href={`/apps/${app.path}`} as={`/apps/${app.path}`}>
+                <button className={cn(utilStyles.link, utilStyles.headingMd, styles.link)}>
+                  {app.name}
+                </button>
+              </Link>
+              <p>{app.description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </Layout>
   );
 }

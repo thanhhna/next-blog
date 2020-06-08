@@ -1,0 +1,10 @@
+@import 'styles/variables';
+
+.about {
+  max-width: 1000px;
+
+  p {
+    color: $gameBg;
+    font-weight: 500;
+  }
+}

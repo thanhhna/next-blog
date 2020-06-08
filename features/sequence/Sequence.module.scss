@@ -48,9 +48,11 @@
     width: 100%;
 
     .timer {
+      margin: auto;
+      width: 200px;
       font-size: 30px;
       font-weight: bold;
-      text-align: center;
+      text-align: left;
     }
 
     .resetBtn {

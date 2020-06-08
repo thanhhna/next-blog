@@ -5,6 +5,8 @@ import Box from './Box';
 import styles from './Sequence.module.scss';
 import utilsStyle from 'styles/utils.module.scss';
 
+const MILLISECOND = 1000;
+
 interface BoardProps {
   gridWidth: number,
   boxesData: BoxData[],
@@ -29,21 +31,24 @@ export default function Board(props: BoardProps) {
     sequenceMaxNumber,
     onStartGame,
     onFinishGame,
-    onResetGame, timeLimit
+    onResetGame,
+    timeLimit
   } = props;
+
+  const timeInMilli = timeLimit * MILLISECOND;
 
   const timerInterval = useRef<any>(undefined);
 
   const [checkedValues, setCheckedValues] = useState<number[]>([]);
-  const [timer, setTimer] = useState(timeLimit);
+  const [timer, setTimer] = useState(timeInMilli);
   const [gameStatus, setGameStatus] = useState(GameStatus.idle);
   const [didReset, setDidReset] = useState(false);
 
   useEffect(() => {
     function runTimer() {
       timerInterval.current = setInterval(() => {
-        setTimer(timer => timer - 1);
-      }, 1000);
+        setTimer(timer => timer - 100);
+      }, 100);
     }
     if (gameStatus === GameStatus.playing) {
       runTimer();
@@ -62,11 +67,11 @@ export default function Board(props: BoardProps) {
     if (timer <= 0 && gameStatus === GameStatus.playing) {
       handleLostGame();
     }
-    if (timer <= Math.floor(timeLimit / 2) && !didReset) {
+    if (timer <= Math.floor(timeInMilli / 2) && !didReset) {
       onResetGame();
       setDidReset(true);
     }
-  }, [timer, timeLimit, onResetGame, gameStatus, didReset]);
+  }, [timer, timeInMilli, onResetGame, gameStatus, didReset]);
 
   function handleClick(pos: Position | undefined) {
     if (pos === undefined) {
@@ -102,7 +107,7 @@ export default function Board(props: BoardProps) {
     setGameStatus(GameStatus.playing);
     setCheckedValues([]);
     onStartGame();
-    setTimer(timeLimit);
+    setTimer(timeInMilli);
     setDidReset(false);
   }
 
@@ -131,6 +136,9 @@ export default function Board(props: BoardProps) {
       break;
   }
 
+  let timeLeft = (timer / MILLISECOND).toString();
+  timeLeft = (timeLeft.indexOf('.') < 0) ? `${timeLeft}.0` : timeLeft;
+
   return (
     <>
       { gameStatus !== GameStatus.playing && (
@@ -147,7 +155,7 @@ export default function Board(props: BoardProps) {
           <>
             <div className={styles.controlBoard}>
               <div className={cn(styles.timer, utilsStyle.primaryText)}>
-                Time: {timer}s
+                Time: {timeLeft}s
               </div>
             </div>
             <div className={styles.board}>

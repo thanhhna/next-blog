@@ -35,7 +35,7 @@ function Layout(
         <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet" />
 
         {
-          process.env.NEXT_PUBLIC_ENV === 'prod' ? (
+          process.env.NODE_ENV === 'production' ? (
             <> 
               <script>var clicky_site_ids = clicky_site_ids || []; clicky_site_ids.push(101231340);</script>
               <script async src="//static.getclicky.com/js"></script>    

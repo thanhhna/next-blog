@@ -1,0 +1,14 @@
+@import 'styles/variables';
+
+.apps {
+  max-width: 1000px;
+
+  p {
+    color: $gameBg;
+    font-weight: 500;
+  }
+
+  .link {
+    font-weight: bold;
+  }
+}

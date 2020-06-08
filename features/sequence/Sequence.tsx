@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import cn from 'classnames';
 import { isMobileOnly } from 'react-device-detect';
 import range from 'range';
 import random from 'random';
@@ -52,7 +53,13 @@ function randPositions(sequenceMaxNumber: number, coordinates: Coordinate[]): Po
   return positions;
 }
 
-export default function Sequence() {
+interface SequenceProps {
+  onFinish?: () => void,
+  onStart?: () => void,
+  className?: string
+}
+
+export default function Sequence({ onFinish, onStart, className = '' }: SequenceProps) {
   const [sequencePositions, setSequencePositions] = useState<Position[]>([]);
   const [gameMode, setGameMode] = useState<GameMode>(MODE[0]);
   const [gridSize, setGridSize] = useState({col: 0, row: 0});
@@ -75,7 +82,7 @@ export default function Sequence() {
       }
       setGridSize(size);
     }
-  }, []);
+  }, [className]);
 
   const allCoordinates: Coordinate[] = [];
 
@@ -125,7 +132,7 @@ export default function Sequence() {
 
       return data;
     });
-  }, [sequencePositions, allCoordinates, gridSize]);
+  }, [sequencePositions]);
 
   const boxesData: BoxData[] = genBoxData();
 
@@ -134,15 +141,20 @@ export default function Sequence() {
   }
 
   function handleFinishGame() {
-
+    if (onFinish) {
+      onFinish();
+    }
   }
 
   function handleStartGame() {
     genPositions();
+    if (onStart) {
+      onStart();
+    }
   }
 
   return(
-    <div className={styles.container} >
+    <div className={cn(styles.container, className)} >
       <div ref={containerRef}>
         <Board
           timeLimit={gameMode.timeLimit}

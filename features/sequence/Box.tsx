@@ -14,7 +14,10 @@ interface BoxProps {
 }
 
 export default function Box({ style, contentStyle, data, onClick, checked }: BoxProps) {
-  function handleClick() {
+  function handleClick(event: React.MouseEvent) {
+    if (event.clientX === 0 || event.clientY === 0) {
+      return;
+    }
     if (data === undefined) {
       return;
     }
