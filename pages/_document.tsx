@@ -1,5 +1,11 @@
 import React from 'react';
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
+import Document, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext
+} from 'next/document';
 
 class MyDocument extends Document {
   static async genInitialProps(ctx: DocumentContext) {
@@ -7,7 +13,7 @@ class MyDocument extends Document {
     return { ...initialProps };
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <Html lang="vi">
         <Head />

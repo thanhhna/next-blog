@@ -5,29 +5,28 @@ import { Coordinator, Mark } from './types';
 import Piece from './Piece';
 import styles from './Board.module.scss';
 
-
 const BOARD_ROW = 40;
 const BOARD_COL = 40;
 
-const CONTAINER_ID = "container";
-const BOARD_ID = "gomoku";
+const CONTAINER_ID = 'container';
+const BOARD_ID = 'gomoku';
 
 interface Score {
-  [Mark.x]: number,
-  [Mark.o]: number
+  [Mark.x]: number;
+  [Mark.o]: number;
 }
 
 interface BoardProps {
-  userMark: Mark,
-  isUserTurn: boolean,
-  xMoves: Coordinator[],
-  oMoves: Coordinator[],
-  move: (coordinator: Coordinator) => void,
-  quit: () => void,
-  score: Score
+  userMark: Mark;
+  isUserTurn: boolean;
+  xMoves: Coordinator[];
+  oMoves: Coordinator[];
+  move: (coordinator: Coordinator) => void;
+  quit: () => void;
+  score: Score;
 }
 
-export default function Board(props: BoardProps) {
+export default function Board(props: BoardProps): JSX.Element {
   const firstLoad = useRef(true);
 
   useEffect(() => {
@@ -58,8 +57,8 @@ export default function Board(props: BoardProps) {
   function pieceOccupiedBy(coordinator: Coordinator): Mark {
     const { xMoves, oMoves } = props;
 
-    const  isXOccupied = xMoves.some(
-      m => m.x === coordinator.x && m.y === coordinator.y
+    const isXOccupied = xMoves.some(
+      (m) => m.x === coordinator.x && m.y === coordinator.y
     );
 
     if (isXOccupied) {
@@ -67,7 +66,7 @@ export default function Board(props: BoardProps) {
     }
 
     const isOOccupied = oMoves.some(
-      m => m.x === coordinator.x && m.y === coordinator.y
+      (m) => m.x === coordinator.x && m.y === coordinator.y
     );
 
     if (isOOccupied) {
@@ -81,10 +80,10 @@ export default function Board(props: BoardProps) {
     const rowNumber = BOARD_ROW;
     const colNumber = BOARD_COL;
 
-    let grid = [];
+    const grid = [];
 
     for (let i = 0; i < rowNumber; i++) {
-      let children = [];
+      const children = [];
 
       for (let j = 0; j < colNumber; j++) {
         const coordinator = {
@@ -94,7 +93,7 @@ export default function Board(props: BoardProps) {
 
         children.push(
           <Piece
-            key={`${i}${j}`} 
+            key={`${i}${j}`}
             coordinator={coordinator}
             move={move}
             userMark={props.userMark}
@@ -109,9 +108,7 @@ export default function Board(props: BoardProps) {
 
     return (
       <table id={BOARD_ID} className={styles.gomoku}>
-        <tbody>
-          {grid}
-        </tbody>
+        <tbody>{grid}</tbody>
       </table>
     );
   }

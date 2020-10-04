@@ -1,6 +1,17 @@
 {
-  "extends": "react-app",
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "eslint:recommended",
+    "react-app",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
   "rules": {
-    "semi": 2
+    "semi": "error",
+    "quotes": ["error", "single", {
+      "allowTemplateLiterals": true
+    }]
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './GoTop.module.scss';
 
-export default function GoTop() {
+export default function GoTop(): JSX.Element | null {
   const initVisible = typeof window !== 'undefined' && window.scrollY > 0;
   const [isVisible, setIsVisible] = useState(initVisible);
 
@@ -10,11 +10,10 @@ export default function GoTop() {
   }
 
   useEffect(() => {
-    function handleScroll () {
+    function handleScroll() {
       if (window.scrollY > 0 && !isVisible) {
         setIsVisible(true);
-      }
-      else if (window.scrollY === 0 && isVisible) {
+      } else if (window.scrollY === 0 && isVisible) {
         setIsVisible(false);
       }
     }
@@ -25,12 +24,14 @@ export default function GoTop() {
 
     window.addEventListener('scroll', handleScroll);
 
-    return (() => {
+    return () => {
       window.removeEventListener('scroll', handleScroll);
-    });
+    };
   });
 
   return isVisible ? (
-    <button onClick={handleClick} className={styles.goTop}><i className="fa fa-angle-up"></i></button>
+    <button onClick={handleClick} className={styles.goTop}>
+      <i className="fa fa-angle-up" />
+    </button>
   ) : null;
 }

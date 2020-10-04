@@ -8,13 +8,13 @@ import utilsStyle from 'styles/utils.module.scss';
 const MILLISECOND = 1000;
 
 interface BoardProps {
-  gridWidth: number,
-  boxesData: BoxData[],
-  sequenceMaxNumber: number,
-  onStartGame: () => void,
-  onFinishGame: () => void,
-  onResetGame: () => void,
-  timeLimit: number
+  gridWidth: number;
+  boxesData: BoxData[];
+  sequenceMaxNumber: number;
+  onStartGame: () => void;
+  onFinishGame: () => void;
+  onResetGame: () => void;
+  timeLimit: number;
 }
 
 enum GameStatus {
@@ -24,7 +24,7 @@ enum GameStatus {
   won
 }
 
-export default function Board(props: BoardProps) {
+export default function Board(props: BoardProps): JSX.Element {
   const {
     boxesData,
     gridWidth,
@@ -47,14 +47,14 @@ export default function Board(props: BoardProps) {
   useEffect(() => {
     function runTimer() {
       timerInterval.current = setInterval(() => {
-        setTimer(timer => timer - 100);
+        setTimer((timer) => timer - 100);
       }, 100);
     }
     if (gameStatus === GameStatus.playing) {
       runTimer();
     }
 
-    return function() {
+    return function () {
       clearInterval(timerInterval.current);
     };
   }, [gameStatus, setTimer, timerInterval]);
@@ -77,11 +77,11 @@ export default function Board(props: BoardProps) {
     if (pos === undefined) {
       return;
     }
-    if (checkedValues.some(v => v === pos.value)) {
+    if (checkedValues.some((v) => v === pos.value)) {
       return;
     }
-    if (pos.value === 0 || checkedValues.some(v => v + 1 === pos.value)) {
-      setCheckedValues(checkedValues => [...checkedValues, pos.value]);
+    if (pos.value === 0 || checkedValues.some((v) => v + 1 === pos.value)) {
+      setCheckedValues((checkedValues) => [...checkedValues, pos.value]);
 
       if (pos.value === sequenceMaxNumber - 1) {
         handleFinishGame();
@@ -91,7 +91,7 @@ export default function Board(props: BoardProps) {
 
   const boxStyle = { width: gridWidth, height: gridWidth };
 
-  const boxes = boxesData.map(d => (
+  const boxes = boxesData.map((d) => (
     <Box
       coordinate={d.coordinate}
       key={d.id}
@@ -99,7 +99,9 @@ export default function Board(props: BoardProps) {
       contentStyle={d.style}
       data={d.position}
       onClick={() => handleClick(d.position)}
-      checked={checkedValues.some(v => d.position !== undefined && v === d.position.value)}
+      checked={checkedValues.some(
+        (v) => d.position !== undefined && v === d.position.value
+      )}
     />
   ));
 
@@ -124,7 +126,12 @@ export default function Board(props: BoardProps) {
 
   switch (gameStatus) {
     case GameStatus.idle:
-      message = <><p>Find numbers by order from the smallest to the biggest.</p><p>Press Start to begin.</p></>;
+      message = (
+        <>
+          <p>Find numbers by order from the smallest to the biggest.</p>
+          <p>Press Start to begin.</p>
+        </>
+      );
       break;
     case GameStatus.won:
       message = <p>You won :)</p>;
@@ -137,33 +144,28 @@ export default function Board(props: BoardProps) {
   }
 
   let timeLeft = (timer / MILLISECOND).toString();
-  timeLeft = (timeLeft.indexOf('.') < 0) ? `${timeLeft}.0` : timeLeft;
+  timeLeft = timeLeft.indexOf('.') < 0 ? `${timeLeft}.0` : timeLeft;
 
   return (
     <>
-      { gameStatus !== GameStatus.playing && (
-          <div className={styles.overlay}>
-            <div className={styles.message}>{message}</div>
-            <button onClick={handleStartGame} className={utilsStyle.btn}>
-              {gameStatus === GameStatus.idle ? 'Start' : 'Play again'}
-            </button>
+      {gameStatus !== GameStatus.playing && (
+        <div className={styles.overlay}>
+          <div className={styles.message}>{message}</div>
+          <button onClick={handleStartGame} className={utilsStyle.btn}>
+            {gameStatus === GameStatus.idle ? 'Start' : 'Play again'}
+          </button>
+        </div>
+      )}
+      {gameStatus === GameStatus.playing && (
+        <>
+          <div className={styles.controlBoard}>
+            <div className={cn(styles.timer, utilsStyle.primaryText)}>
+              Time: {timeLeft}s
+            </div>
           </div>
-        )
-      }
-      {
-        gameStatus === GameStatus.playing && (
-          <>
-            <div className={styles.controlBoard}>
-              <div className={cn(styles.timer, utilsStyle.primaryText)}>
-                Time: {timeLeft}s
-              </div>
-            </div>
-            <div className={styles.board}>
-              {boxes}
-            </div>
-          </>
-        )
-      }
+          <div className={styles.board}>{boxes}</div>
+        </>
+      )}
     </>
   );
 }

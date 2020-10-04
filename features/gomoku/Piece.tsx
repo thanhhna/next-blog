@@ -4,41 +4,40 @@ import cn from 'classnames';
 import { Coordinator, Mark } from './types';
 import styles from './Piece.module.scss';
 
-
 interface PieceProps {
-  occupyingMark?: Mark,
-  move: (coordinator: Coordinator) => void
-  coordinator: Coordinator,
-  userMark: Mark,
-  isUserTurn: boolean
+  occupyingMark?: Mark;
+  move: (coordinator: Coordinator) => void;
+  coordinator: Coordinator;
+  userMark: Mark;
+  isUserTurn: boolean;
 }
 
-export default function Piece(props: PieceProps) {
+export default function Piece(props: PieceProps): JSX.Element {
   const { occupyingMark = Mark.EMPTY } = props;
 
   const [hoverMark, setHoverMark] = useState(Mark.EMPTY);
 
   const isOccupied = occupyingMark !== Mark.EMPTY;
 
-  function handleClick(event: React.MouseEvent) {
+  function handleClick() {
     if (isOccupied) {
       return;
     }
 
     props.move(props.coordinator);
-  } 
+  }
 
-  function handleMouseOver(event: React.MouseEvent) {
-    const { userMark, isUserTurn  } = props;
-    
+  function handleMouseOver() {
+    const { userMark, isUserTurn } = props;
+
     if (isOccupied || isUserTurn) {
       return;
     }
-    
+
     setHoverMark(userMark);
   }
 
-  function handleMouseOut(even: React.MouseEvent) {
+  function handleMouseOut() {
     setHoverMark(Mark.EMPTY);
   }
 

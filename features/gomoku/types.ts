@@ -1,6 +1,6 @@
 export interface Coordinator {
-  x: number,
-  y: number
+  x: number;
+  y: number;
 }
 
 export enum Mark {

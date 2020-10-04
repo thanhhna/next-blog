@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import Layout from "components/Layout";
-import FollowTheClue from "features/puzzles/FollowTheClue";
-import styles from "./cv.module.scss";
-import utilStyles from "styles/utils.module.scss";
+import React, { useState } from 'react';
+import Layout from 'components/Layout';
+import FollowTheClue from 'features/puzzles/FollowTheClue';
+import styles from './cv.module.scss';
+import utilStyles from 'styles/utils.module.scss';
 
-export default function CV() {
+export default function CV(): JSX.Element {
   const [started, setStarted] = useState(true);
   const [isSolved, setIsSolved] = useState(false);
 
@@ -16,7 +16,7 @@ export default function CV() {
     // download cv
   }
 
-  const puzzleClass = !started || isSolved ? utilStyles.hide : "";
+  const puzzleClass = !started || isSolved ? utilStyles.hide : '';
 
   return (
     <Layout title="My CV">
@@ -25,10 +25,10 @@ export default function CV() {
         {!started &&
           (isSolved ? (
             <p className={styles.won}>
-              You solved it! Click{" "}
+              You solved it! Click{' '}
               <span onClick={download} className={utilStyles.link}>
                 here
-              </span>{" "}
+              </span>{' '}
               to download the CV. Thank you.
             </p>
           ) : (

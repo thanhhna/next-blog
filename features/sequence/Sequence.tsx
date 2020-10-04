@@ -11,9 +11,9 @@ const GRID_WIDTH = isMobileOnly ? 40 : 70;
 const RANDOM_GAP = isMobileOnly ? 10 : 20;
 
 interface GameMode {
-  label: string,
-  sequenceMax: number,
-  timeLimit: number
+  label: string;
+  sequenceMax: number;
+  timeLimit: number;
 }
 
 const MODE: GameMode[] = [
@@ -34,12 +34,15 @@ const MODE: GameMode[] = [
   }
 ];
 
-function randPositions(sequenceMaxNumber: number, coordinates: Coordinate[]): Position[] {
+function randPositions(
+  sequenceMaxNumber: number,
+  coordinates: Coordinate[]
+): Position[] {
   const positions: Position[] = [];
 
   range.range(0, sequenceMaxNumber).forEach((value: number) => {
     const remainCoordinates = coordinates.filter(
-      c => !positions.some(p => p.x === c.x && p.y === c.y)
+      (c) => !positions.some((p) => p.x === c.x && p.y === c.y)
     );
 
     const index = random.int(0, remainCoordinates.length - 1);
@@ -54,16 +57,20 @@ function randPositions(sequenceMaxNumber: number, coordinates: Coordinate[]): Po
 }
 
 interface SequenceProps {
-  onFinish?: () => void,
-  onStart?: () => void,
-  className?: string
+  onFinish?: () => void;
+  onStart?: () => void;
+  className?: string;
 }
 
-export default function Sequence({ onFinish, onStart, className = '' }: SequenceProps) {
+export default function Sequence({
+  onFinish,
+  onStart,
+  className = ''
+}: SequenceProps): JSX.Element {
   const [sequencePositions, setSequencePositions] = useState<Position[]>([]);
   const [gameMode, setGameMode] = useState<GameMode>(MODE[0]);
-  const [gridSize, setGridSize] = useState({col: 0, row: 0});
-  
+  const [gridSize, setGridSize] = useState({ col: 0, row: 0 });
+
   const containerRef = React.createRef<HTMLDivElement>();
 
   useEffect(() => {
@@ -82,7 +89,7 @@ export default function Sequence({ onFinish, onStart, className = '' }: Sequence
       }
       setGridSize(size);
     }
-  }, [className]);
+  }, [className, containerRef]);
 
   const allCoordinates: Coordinate[] = [];
 
@@ -92,15 +99,16 @@ export default function Sequence({ onFinish, onStart, className = '' }: Sequence
     });
   });
 
-  function genPositions () {
+  function genPositions() {
     const positions = randPositions(gameMode.sequenceMax, allCoordinates);
     setSequencePositions(positions);
   }
 
   const genBoxData = useCallback(() => {
     return allCoordinates.map((pos: Coordinate, index: number) => {
-      const posExists = sequencePositions.find(p => p.x === pos.x && p.y === pos.y);
-
+      const posExists = sequencePositions.find(
+        (p) => p.x === pos.x && p.y === pos.y
+      );
 
       let left = random.int(-RANDOM_GAP, RANDOM_GAP);
       let top = random.int(-RANDOM_GAP, RANDOM_GAP);
@@ -132,7 +140,7 @@ export default function Sequence({ onFinish, onStart, className = '' }: Sequence
 
       return data;
     });
-  }, [sequencePositions]);
+  }, [sequencePositions, allCoordinates, gridSize.col, gridSize.row]);
 
   const boxesData: BoxData[] = genBoxData();
 
@@ -153,8 +161,8 @@ export default function Sequence({ onFinish, onStart, className = '' }: Sequence
     }
   }
 
-  return(
-    <div className={cn(styles.container, className)} >
+  return (
+    <div className={cn(styles.container, className)}>
       <div ref={containerRef}>
         <Board
           timeLimit={gameMode.timeLimit}
