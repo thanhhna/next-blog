@@ -15,8 +15,8 @@ export async function getStaticPaths() {
 
 interface StaticProps {
   params: {
-    id: string
-  }
+    id: string;
+  };
 }
 
 export async function getStaticProps({ params }: StaticProps) {
@@ -30,11 +30,11 @@ export async function getStaticProps({ params }: StaticProps) {
 
 interface PostProps {
   postData: {
-    title: string,
-    date: string,
-    publish: boolean,
-    contentHtml: string
-  }
+    title: string;
+    date: string;
+    publish: boolean;
+    contentHtml: string;
+  };
 }
 
 export default function Post({ postData }: PostProps) {
