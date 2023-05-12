@@ -1,0 +1,49 @@
+.container {
+  height: 100%;
+}
+
+.main {
+  padding: 1.5em;
+  height: 100%;
+
+  display: grid;
+  grid-template-columns: 200px auto;
+
+  @media (max-width: 800px) {
+    padding: 0 0 10px 0;
+    display: block;
+    overflow-y: auto;
+  }
+}
+
+.content {
+  padding: 0 1rem;
+}
+
+.headerImage {
+  width: 6rem;
+  height: 6rem;
+}
+
+
+
+.nav {
+  padding: 1em;
+  border-radius: 3px;
+
+  .headerHomeImage {
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }
+
+  * {
+    margin: auto
+  };
+
+  .link {
+    & > * {
+      display: block;
+      margin: 1rem auto;
+    }
+  }
+}

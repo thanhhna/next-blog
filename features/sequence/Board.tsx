@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import cn from 'classnames';
+import cn from '@lib/classnames';
 import { BoxData, Position } from './types';
 import Box from './Box';
 import styles from './Sequence.module.scss';

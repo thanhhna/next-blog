@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import cn from 'classnames';
+import cn from '@lib/classnames';
 
 import { Coordinator, Mark } from './types';
 import styles from './Piece.module.scss';

@@ -1,5 +1,6 @@
+'use client';
 import React, { useState, useCallback, useEffect } from 'react';
-import cn from 'classnames';
+import cn from '@lib/classnames';
 import { isMobileOnly } from 'react-device-detect';
 import range from 'range';
 import random from 'random';

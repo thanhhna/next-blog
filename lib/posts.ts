@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs from 'node:fs/promises';
 import path from 'path';
+import MarkdownIt from 'markdown-it';
 import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
-import highlight from 'remark-highlight.js';
+import hl from 'highlight.js';
+import 'highlight.js/styles/base16/solarized-light.css';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
@@ -20,49 +20,52 @@ interface PostDataWithHtml extends PostData {
 
 export async function getPostData(id: string): Promise<PostDataWithHtml> {
   const fullPath = path.join(postsDirectory, `${id}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const fileContents = await fs.readFile(fullPath, 'utf8');
 
-  const matterResult = matter(fileContents);
+  const md = new MarkdownIt({
+    highlight: function (str, lang) {
+      if (lang && hl.getLanguage(lang)) {
+        return hl.highlight(str, { language: lang }).value;
+      }
+      return '';
+    }
+  });
 
-  const processedContent = await remark()
-    .use(highlight)
-    .use(html)
-    .process(matterResult.content);
-
-  const contentHtml = processedContent.toString();
+  const matterData = matter(fileContents);
+  const contentHtml = md.render(matterData.content);
 
   return {
     id,
     contentHtml,
-    ...matterResult.data
+    ...matterData.data
   } as PostDataWithHtml;
 }
 
-export function getAllPostIds(): { params: { id: string } }[] {
-  const fileNames = fs.readdirSync(postsDirectory);
+export async function getAllPostIds(): Promise<{ id: string }[]> {
+  const fileNames = await fs.readdir(postsDirectory);
 
   return fileNames.map((fileName) => ({
-    params: {
-      id: fileName.replace(/\.md$/, '')
-    }
+    id: fileName.replace(/\.md$/, '')
   }));
 }
 
-export function getSortedPostsData(): PostData[] {
-  const fileNames = fs.readdirSync(postsDirectory);
-  const allPostsData = fileNames.map((fileName) => {
-    const id = fileName.replace(/\.md$/, '');
+export async function getSortedPostsData(): Promise<PostData[]> {
+  const fileNames = await fs.readdir(postsDirectory);
+  const allPostsData = await Promise.all(
+    fileNames.map(async (fileName) => {
+      const id = fileName.replace(/\.md$/, '');
 
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const fullPath = path.join(postsDirectory, fileName);
+      const fileContents = await fs.readFile(fullPath, 'utf8');
 
-    const matterResults = matter(fileContents);
+      const matterResults = matter(fileContents);
 
-    return {
-      id,
-      ...matterResults.data
-    } as PostData;
-  });
+      return {
+        id,
+        ...matterResults.data
+      } as PostData;
+    })
+  );
 
   return allPostsData
     .filter((p) => p.publish)

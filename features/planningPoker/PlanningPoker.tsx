@@ -1,239 +1,365 @@
-import React, { KeyboardEvent, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import cn from 'classnames';
-import { message } from 'antd';
-import styles from './PlanningPoker.module.scss';
-import { io, Socket } from 'socket.io-client';
+'use client';
 
-interface Player {
-  name: string;
-  score?: number;
+import { notifications } from '@mantine/notifications';
+import styled from '@emotion/styled';
+import { configureAbly, useChannel, usePresence } from '@ably-labs/react-hooks';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { Types } from 'ably';
+import {
+  IconClockHour8,
+  IconCircleCheckFilled,
+  IconDeviceGamepad,
+  IconCopy
+} from '@tabler/icons-react';
+import {
+  Button,
+  Card,
+  Center,
+  Flex,
+  Text,
+  Title,
+  TextInput,
+  Tooltip,
+  Header
+} from '@mantine/core';
+import { PieChart } from 'react-minimal-pie-chart';
+import randomChars from 'random-chars';
+import { v4 as uuid } from 'uuid';
+import { useMediaQuery } from '@mantine/hooks';
+
+const PointCard = styled(Flex)`
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 3px -2px;
+    cursor: pointer;
+    transform: scale(1.05);
+  }
+`;
+
+const userId = uuid();
+
+interface UserData {
+  id: string;
+  username: string;
+  vote: null | string;
+  isOwner: boolean;
+  revealed: boolean;
 }
 
-enum GameStatus {
-  Voting = 'voting',
-  Revealed = 'revealed'
-}
-
-interface Room {
-  id?: string;
-  players: Player[];
-  status: GameStatus;
-}
-
-const initialRoom = {
-  players: [],
-  status: GameStatus.Voting
-};
+configureAbly({
+  authUrl: `${window.location.origin}/api/ablyAuth`,
+  clientId: 'planning-poker'
+});
 
 export default function PlanningPoker() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
+  const r = searchParams?.get('r');
 
-  const { r } = router.query;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const ownerRef = useRef<boolean>(false);
+  const [message, setMessage] = useState<Types.Message | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  const [socket, setSocket] = useState<Socket | undefined>(undefined);
+  if (!r) {
+    ownerRef.current = true;
+  }
 
-  const [username, setUsername] = useState<string | undefined>(undefined);
-
-  const [room, setRoom] = useState<Room>(initialRoom);
+  const roomId = r || (randomChars.get(16) as string);
 
   useEffect(() => {
-    if (r && socket) {
-      socket.emit('roomCheck', { roomId: r });
+    if (!r) {
+      router.push(`${pathname}?r=${roomId}`);
     }
-  }, [r, socket]);
-
-  useEffect(() => {
-    const newConnection = io();
-    setSocket(newConnection);
-    return function () {
-      newConnection.close();
-    };
   }, []);
 
+  const initialData: UserData = {
+    username: '',
+    vote: null,
+    isOwner: ownerRef.current,
+    revealed: false,
+    id: userId
+  };
+
+  const [presenceData, setData] = usePresence(roomId, initialData);
+
+  const owner =
+    presenceData.find((d) => d.data.isOwner)?.data ?? ({} as UserData);
+  const user =
+    presenceData.find((d) => d.data.id === userId)?.data ?? ({} as UserData);
+
   useEffect(() => {
-    if (!socket) {
+    if (
+      !owner.id &&
+      user.id &&
+      presenceData.findIndex((d) => d.data.id === userId) === 0
+    ) {
+      setData({
+        ...user,
+        isOwner: true
+      });
+      ownerRef.current = true;
+    }
+  }, [presenceData]);
+
+  const [channel] = useChannel(roomId, (message) => handleMessage(message));
+
+  function handleMessage(message: Types.Message) {
+    setMessage(message);
+  }
+
+  useEffect(() => {
+    if (message?.data?.action === 'reset') {
+      setData({
+        ...user,
+        vote: null,
+        revealed: false
+      });
+    }
+  }, [message]);
+
+  const cards = [
+    ['0', '#FF6D60'],
+    ['1/2', '#F7D060'],
+    ['1', '#FF6D60'],
+    ['2', '#F7D060'],
+    ['3', '#3C486B'],
+    ['5', '#87CBB9'],
+    ['8', '#D14D72'],
+    ['13', '#00235B'],
+    ['20', '#E21818'],
+    ['40', '#FFDD83'],
+    ['100', '#98DFD6'],
+    ['?', '#E06469']
+  ];
+
+  function handleUsername() {
+    const userInput = inputRef.current?.value || '';
+    if (userInput.trim() === '') {
+      notifications.show({
+        title: 'Oops',
+        message: 'Please enter username',
+        color: 'orange'
+      });
       return;
     }
-
-    socket.on('room', (data) => {
-      const { room } = data;
-      setRoom(room);
+    const name = userInput.trim();
+    setData({
+      ...initialData,
+      username: name
     });
-
-    socket.on('gameCreated', (data) => {
-      const { roomId } = data;
-
-      router.push(`${router.basePath}?r=${roomId}`);
-    });
-
-    socket.on('roomNotExist', () => {
-      setRoom(initialRoom);
-      router.push(router.basePath);
-      message.error('Room is not exists');
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    if (r) {
-      setRoom({ ...room, id: r as string });
-    }
-  }, [r]);
-
-  const cards = [1, 2, 3, 5, 8];
-
-  const firstHalfPlayers =
-    room.players.length > 8
-      ? room.players.slice(0, room.players.length / 2 + 1)
-      : room.players;
-  const secondHalfPlayers =
-    room.players.length > 8
-      ? room.players.slice(room.players.length / 2 + 1)
-      : [];
-
-  const score = (
-    room.players.reduce((acc, curr) => {
-      if (curr.score) {
-        return acc + curr.score;
-      }
-      return acc;
-    }, 0) / room.players.length
-  ).toFixed(1);
-
-  const buttonClickable =
-    room.players.every((p) => !!p.score) || room.status === GameStatus.Revealed;
-
-  async function handleStartNewGame() {
-    socket?.emit('createGame');
   }
 
-  async function handleCloseGame() {
-    setRoom(initialRoom);
-    socket?.emit('leave');
-    await router.push(router.basePath);
-  }
-
-  function handleUsernameEnter(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      const userInput = (event.target as HTMLInputElement).value;
-      if (userInput.trim() === '') {
-        message.error('Please enter username');
-        return;
-      }
-      if (userInput.trim().includes(' ')) {
-        message.error(`Username can't have spaces`);
-        return;
-      }
-      setUsername(userInput.trim());
-      socket?.emit('submitUsername', {
-        username: userInput.trim(),
-        roomId: room.id
+  function reveal() {
+    if (ownerRef.current) {
+      setData({
+        ...user,
+        revealed: true
       });
     }
   }
 
-  function handleShowScore() {
-    if (room.status === GameStatus.Revealed) {
-      socket?.emit('reset');
-    } else {
-      socket?.emit('reveal');
+  function handleReset() {
+    if (ownerRef.current) {
+      channel.publish('message', {
+        action: 'reset'
+      });
     }
   }
 
-  function handleVote(score: number) {
-    if (room.status === GameStatus.Revealed) {
-      return;
-    }
-    socket?.emit('vote', { score });
+  function handleVote(vote: string) {
+    setData({
+      ...user,
+      vote
+    });
   }
+
+  function handleKeyPress(event: KeyboardEvent) {
+    if (event.code === 'Enter') {
+      handleUsername();
+    }
+  }
+
+  function handleCopy() {
+    const link = window.location.href;
+    navigator.clipboard.writeText(link).then(
+      function () {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      },
+      function (err) {
+        notifications.show({
+          title: 'Oops',
+          message: 'Could not copy to clipboard'
+        });
+      }
+    );
+  }
+
+  const matches = useMediaQuery('(max-width: 1024px)');
+  const noneHasVoted = presenceData.every(({ data }) => !data.vote);
 
   return (
-    <div className={styles.planner}>
-      <div className={styles.header}>
-        <h2>Planning Poker</h2>
-        <div className={styles.action}>
-          {room.id && (
-            <button className={styles.close} onClick={handleCloseGame}>
-              x
-            </button>
-          )}
+    <>
+      <Header height={{ base: 50, md: 70 }} p="md">
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <Title order={3} color="teal">
+            Play Planning Poker
+          </Title>
         </div>
-      </div>
-      {!room.id && (
-        <div className={styles.newGame}>
-          <div onClick={handleStartNewGame}>Start new game</div>
-        </div>
-      )}
-      {room.id && (
-        <div className={styles.main}>
-          <div className={styles.scoreBox}>
-            <button
-              className={styles.scoreButton}
-              disabled={!buttonClickable}
-              onClick={handleShowScore}
-            >
-              {room.status === GameStatus.Voting ? (
-                <span>Show score</span>
+      </Header>
+      <Flex direction="column" mt="md">
+        {!user.username || user.username?.length <= 0 ? (
+          <Center>
+            <Flex direction="column" gap={20}>
+              <Title order={4} color="teal">
+                Join room
+              </Title>
+              <TextInput
+                onKeyPress={handleKeyPress as any}
+                ref={inputRef}
+                placeholder="Your username"
+                autoFocus
+              />
+              <Button color="teal" onClick={handleUsername}>
+                Enter
+              </Button>
+            </Flex>
+          </Center>
+        ) : (
+          <Flex gap={10}>
+            <Flex sx={{ flexBasis: '25%' }} direction="column" p={5}>
+              <Card withBorder>
+                <Card.Section withBorder bg="teal.9" h={40}>
+                  <Center fw={700} h={'100%'}>
+                    <Flex w={'100%'}>
+                      <Flex
+                        pl={50}
+                        sx={{ flexGrow: 1, justifyContent: 'center' }}
+                      >
+                        <Text color="white">Players</Text>
+                      </Flex>
+                      <Flex sx={{ flexBasis: '50px', cursor: 'pointer' }}>
+                        <Tooltip
+                          label="Link copied!"
+                          position="top"
+                          opened={copied}
+                          openDelay={500}
+                        >
+                          <IconCopy color="white" onClick={handleCopy} />
+                        </Tooltip>
+                      </Flex>
+                    </Flex>
+                  </Center>
+                </Card.Section>
+                <Card.Section>
+                  {presenceData
+                    .sort((a, b) =>
+                      a.data.username > b.data.username ? 1 : -1
+                    )
+                    .map(({ data }, index) => (
+                      <Flex sx={{ alignItems: 'center' }} px={10} key={index}>
+                        <Flex sx={{ flexBasis: '50px' }}>
+                          {data.isOwner ? (
+                            <IconDeviceGamepad
+                              style={{ marginLeft: 10 }}
+                              color="green"
+                            />
+                          ) : null}
+                        </Flex>
+                        <Center h={40} sx={{ flexGrow: 1 }}>
+                          <Text color="teal.9" fw={600}>
+                            {data.username}
+                          </Text>
+                        </Center>
+                        <Flex
+                          sx={{ flexBasis: '50px', justifyContent: 'center' }}
+                        >
+                          {data.vote ? (
+                            owner.revealed ? (
+                              <Text fw={500}>{data.vote}</Text>
+                            ) : (
+                              <IconCircleCheckFilled color="teal" />
+                            )
+                          ) : (
+                            <IconClockHour8 color="gray" />
+                          )}
+                        </Flex>
+                      </Flex>
+                    ))}
+                </Card.Section>
+              </Card>
+            </Flex>
+            <Flex direction="column" sx={{ flexGrow: 1 }}>
+              {owner.revealed ? (
+                <Flex h={400}>
+                  <PieChart
+                    animate
+                    label={({ dataEntry }) => dataEntry.title}
+                    labelStyle={{
+                      fill: 'white'
+                    }}
+                    data={cards
+                      .filter((c) =>
+                        presenceData.some((d) => d.data.vote === c[0])
+                      )
+                      .map((c) => ({
+                        title: c[0],
+                        value: presenceData.filter((d) => d.data.vote === c[0])
+                          .length,
+                        color: c[1]
+                      }))}
+                  />
+                </Flex>
               ) : (
-                <span>Reset</span>
+                <Flex wrap="wrap" sx={{ boxSizing: 'border-box' }}>
+                  {cards.map((c, index) => {
+                    const isSelected = user.vote === c[0];
+                    return (
+                      <Center
+                        w={`${100 / (matches ? 4 : 6)}%`}
+                        h={200}
+                        p={5}
+                        key={index}
+                        fz={40}
+                      >
+                        <PointCard
+                          w={'100%'}
+                          h={'100%'}
+                          bg={isSelected ? 'teal.9' : 'gray.2'}
+                          onClick={() => handleVote(c[0])}
+                        >
+                          <Text color={isSelected ? 'white' : 'gray.7'}>
+                            {c[0]}
+                          </Text>
+                        </PointCard>
+                      </Center>
+                    );
+                  })}
+                </Flex>
               )}
-            </button>
-            <div className={styles.score}>
-              {room.status === GameStatus.Revealed ? <span>{score}</span> : ''}
-            </div>
-          </div>
-          <div className={styles.cardBox}>
-            {cards.map((c, i) => (
-              <div
-                key={i}
-                className={cn(
-                  styles.card,
-                  room.players.some((p) => p.name === username && p.score === c)
-                    ? styles.active
-                    : ''
-                )}
-                onClick={() => handleVote(c)}
-              >
-                {c}
-              </div>
-            ))}
-          </div>
-          <div className={styles.playerList}>
-            {firstHalfPlayers.map((p, i) => (
-              <div className={styles.player} key={i}>
-                <div className={styles.name}>{p.name}</div>
-                <div className={cn(styles.card, p.score ? styles.active : '')}>
-                  {room.status === GameStatus.Revealed ? p.score : ''}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.playerList}>
-            {secondHalfPlayers.map((p, i) => (
-              <div className={styles.player} key={i}>
-                <div className={styles.name}>{p.name}</div>
-                <div
-                  className={cn(
-                    styles.card,
-
-                    p.score ? styles.active : ''
-                  )}
-                >
-                  {room.status === GameStatus.Revealed ? p.score : ''}
-                </div>
-              </div>
-            ))}
-          </div>
-          {!username && (
-            <div className={styles.usernameModal}>
-              <div className={styles.modalContent}>
-                <span>Enter your username</span>
-                <input onKeyPress={handleUsernameEnter} />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+              {ownerRef.current ? (
+                <Center mt={30}>
+                  <Button
+                    size="lg"
+                    color="teal.9"
+                    onClick={() => (owner.revealed ? handleReset() : reveal())}
+                    disabled={noneHasVoted}
+                  >
+                    {owner.revealed ? 'Start new round' : 'Reveal voting'}
+                  </Button>
+                </Center>
+              ) : null}
+            </Flex>
+          </Flex>
+        )}
+      </Flex>
+    </>
   );
 }
