@@ -49,16 +49,16 @@ interface UserData {
   revealed: boolean;
 }
 
-configureAbly({
-  authUrl: `${window.location.origin}/api/ablyAuth`,
-  clientId: 'planning-poker'
-});
-
 export default function PlanningPoker() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const r = searchParams?.get('r');
+
+  configureAbly({
+    authUrl: `${window.location.origin}/api/ablyAuth`,
+    clientId: 'planning-poker'
+  });
 
   const inputRef = useRef<HTMLInputElement>(null);
   const ownerRef = useRef<boolean>(false);
