@@ -12,6 +12,7 @@
     "semi": "error",
     "quotes": ["error", "single", {
       "allowTemplateLiterals": true
-    }]
+    }],
+    "react/react-in-jsx-scope": 0
   }
 }

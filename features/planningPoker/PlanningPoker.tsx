@@ -7,26 +7,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Types } from 'ably';
 import {
-  IconClockHour8,
-  IconCircleCheckFilled,
-  IconDeviceGamepad,
-  IconCopy
-} from '@tabler/icons-react';
-import {
   Button,
-  Card,
   Center,
   Flex,
   Text,
   Title,
   TextInput,
-  Tooltip,
-  Header
+  Header,
+  createStyles
 } from '@mantine/core';
-import { PieChart } from 'react-minimal-pie-chart';
 import randomChars from 'random-chars';
 import { v4 as uuid } from 'uuid';
-import { useMediaQuery } from '@mantine/hooks';
+import PieChart from '@features/planningPoker/PieChart';
+import PlayerList from '@features/planningPoker/PlayerList';
 
 const PointCard = styled(Flex)`
   align-items: center;
@@ -41,13 +34,35 @@ const PointCard = styled(Flex)`
 
 const userId = uuid();
 
-interface UserData {
+export interface UserData {
   id: string;
   username: string;
   vote: null | string;
   isOwner: boolean;
   revealed: boolean;
 }
+
+const useStyles = createStyles((theme) => ({
+  main: {
+    [theme.fn.smallerThan('sm')]: {
+      flexDirection: 'column'
+    }
+  },
+  pointCard: {
+    [theme.fn.smallerThan('xs')]: {
+      width: `100%`
+    },
+    [(theme.fn.smallerThan('md'), theme.fn.largerThan('xs'))]: {
+      width: `${100 / 2}%`
+    },
+    [theme.fn.largerThan('md')]: {
+      width: `${100 / 4}%`
+    },
+    [theme.fn.largerThan('lg')]: {
+      width: `${100 / 6}%`
+    }
+  }
+}));
 
 export default function PlanningPoker() {
   const searchParams = useSearchParams();
@@ -57,40 +72,53 @@ export default function PlanningPoker() {
 
   configureAbly({
     authUrl: `${window.location.origin}/api/ablyAuth`,
-    clientId: 'planning-poker'
+    disconnectedRetryTimeout: 5000,
+    suspendedRetryTimeout: 5000
   });
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const ownerRef = useRef<boolean>(false);
-  const [message, setMessage] = useState<Types.Message | null>(null);
-  const [copied, setCopied] = useState(false);
+  const styles = useStyles();
 
-  if (!r) {
-    ownerRef.current = true;
-  }
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [message, setMessage] = useState<Types.Message | null>(null);
+  const [offline, setOffline] = useState(false);
 
   const roomId = r || (randomChars.get(16) as string);
+
+  const initialData: UserData = {
+    username: '',
+    vote: null,
+    isOwner: !r,
+    revealed: false,
+    id: userId
+  };
+
+  const [presenceData, setData] = usePresence(roomId, initialData);
+  const [channel, ably] = useChannel(roomId, (message) =>
+    handleMessage(message)
+  );
+
+  const userData = presenceData
+    .filter(({ data }) => data.username !== '')
+    .sort((a, b) => (a.data.username > b.data.username ? 1 : -1))
+    .map((d) => d.data);
+  const owner = userData.find((d) => d.isOwner) ?? ({} as UserData);
+  const user = userData.find((d) => d.id === userId) ?? ({} as UserData);
+
+  ably.connection.on('connected', () => {
+    if (offline && user.isOwner) {
+      setData({
+        ...user,
+        isOwner: false
+      });
+      setOffline(false);
+    }
+  });
 
   useEffect(() => {
     if (!r) {
       router.push(`${pathname}?r=${roomId}`);
     }
   }, []);
-
-  const initialData: UserData = {
-    username: '',
-    vote: null,
-    isOwner: ownerRef.current,
-    revealed: false,
-    id: userId
-  };
-
-  const [presenceData, setData] = usePresence(roomId, initialData);
-
-  const owner =
-    presenceData.find((d) => d.data.isOwner)?.data ?? ({} as UserData);
-  const user =
-    presenceData.find((d) => d.data.id === userId)?.data ?? ({} as UserData);
 
   useEffect(() => {
     if (
@@ -102,15 +130,8 @@ export default function PlanningPoker() {
         ...user,
         isOwner: true
       });
-      ownerRef.current = true;
     }
   }, [presenceData]);
-
-  const [channel] = useChannel(roomId, (message) => handleMessage(message));
-
-  function handleMessage(message: Types.Message) {
-    setMessage(message);
-  }
 
   useEffect(() => {
     if (message?.data?.action === 'reset') {
@@ -122,7 +143,18 @@ export default function PlanningPoker() {
     }
   }, [message]);
 
-  const cards = [
+  useEffect(() => {
+    const handleOffline = () => {
+      setOffline(true);
+    };
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const cards: [string, string][] = [
     ['0', '#FF6D60'],
     ['1/2', '#F7D060'],
     ['1', '#FF6D60'],
@@ -131,11 +163,17 @@ export default function PlanningPoker() {
     ['5', '#87CBB9'],
     ['8', '#D14D72'],
     ['13', '#00235B'],
-    ['20', '#E21818'],
+    ['20', '#E8AA42'],
     ['40', '#FFDD83'],
     ['100', '#98DFD6'],
-    ['?', '#E06469']
+    ['∞', '#545B77'],
+    ['?', '#E06469'],
+    ['☕', '#5C8984']
   ];
+
+  function handleMessage(message: Types.Message) {
+    setMessage(message);
+  }
 
   function handleUsername() {
     const userInput = inputRef.current?.value || '';
@@ -155,7 +193,7 @@ export default function PlanningPoker() {
   }
 
   function reveal() {
-    if (ownerRef.current) {
+    if (user.isOwner) {
       setData({
         ...user,
         revealed: true
@@ -164,7 +202,7 @@ export default function PlanningPoker() {
   }
 
   function handleReset() {
-    if (ownerRef.current) {
+    if (user.isOwner) {
       channel.publish('message', {
         action: 'reset'
       });
@@ -184,32 +222,13 @@ export default function PlanningPoker() {
     }
   }
 
-  function handleCopy() {
-    const link = window.location.href;
-    navigator.clipboard.writeText(link).then(
-      function () {
-        setCopied(true);
-        setTimeout(() => {
-          setCopied(false);
-        }, 2000);
-      },
-      function (err) {
-        notifications.show({
-          title: 'Oops',
-          message: 'Could not copy to clipboard'
-        });
-      }
-    );
-  }
-
-  const matches = useMediaQuery('(max-width: 1024px)');
-  const noneHasVoted = presenceData.every(({ data }) => !data.vote);
+  const noneHasVoted = userData.every(({ vote }) => !vote);
 
   return (
     <>
       <Header height={{ base: 50, md: 70 }} p="md">
         <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-          <Title order={3} color="teal">
+          <Title order={3} color="teal.7">
             Play Planning Poker
           </Title>
         </div>
@@ -218,7 +237,7 @@ export default function PlanningPoker() {
         {!user.username || user.username?.length <= 0 ? (
           <Center>
             <Flex direction="column" gap={20}>
-              <Title order={4} color="teal">
+              <Title order={4} color="teal.7">
                 Join room
               </Title>
               <TextInput
@@ -227,95 +246,20 @@ export default function PlanningPoker() {
                 placeholder="Your username"
                 autoFocus
               />
-              <Button color="teal" onClick={handleUsername}>
+              <Button color="teal.7" onClick={handleUsername}>
                 Enter
               </Button>
             </Flex>
           </Center>
         ) : (
-          <Flex gap={10}>
+          <Flex gap={10} className={styles.classes.main}>
             <Flex sx={{ flexBasis: '25%' }} direction="column" p={5}>
-              <Card withBorder>
-                <Card.Section withBorder bg="teal.9" h={40}>
-                  <Center fw={700} h={'100%'}>
-                    <Flex w={'100%'}>
-                      <Flex
-                        pl={50}
-                        sx={{ flexGrow: 1, justifyContent: 'center' }}
-                      >
-                        <Text color="white">Players</Text>
-                      </Flex>
-                      <Flex sx={{ flexBasis: '50px', cursor: 'pointer' }}>
-                        <Tooltip
-                          label="Link copied!"
-                          position="top"
-                          opened={copied}
-                          openDelay={500}
-                        >
-                          <IconCopy color="white" onClick={handleCopy} />
-                        </Tooltip>
-                      </Flex>
-                    </Flex>
-                  </Center>
-                </Card.Section>
-                <Card.Section>
-                  {presenceData
-                    .sort((a, b) =>
-                      a.data.username > b.data.username ? 1 : -1
-                    )
-                    .map(({ data }, index) => (
-                      <Flex sx={{ alignItems: 'center' }} px={10} key={index}>
-                        <Flex sx={{ flexBasis: '50px' }}>
-                          {data.isOwner ? (
-                            <IconDeviceGamepad
-                              style={{ marginLeft: 10 }}
-                              color="green"
-                            />
-                          ) : null}
-                        </Flex>
-                        <Center h={40} sx={{ flexGrow: 1 }}>
-                          <Text color="teal.9" fw={600}>
-                            {data.username}
-                          </Text>
-                        </Center>
-                        <Flex
-                          sx={{ flexBasis: '50px', justifyContent: 'center' }}
-                        >
-                          {data.vote ? (
-                            owner.revealed ? (
-                              <Text fw={500}>{data.vote}</Text>
-                            ) : (
-                              <IconCircleCheckFilled color="teal" />
-                            )
-                          ) : (
-                            <IconClockHour8 color="gray" />
-                          )}
-                        </Flex>
-                      </Flex>
-                    ))}
-                </Card.Section>
-              </Card>
+              <PlayerList data={userData} />
             </Flex>
             <Flex direction="column" sx={{ flexGrow: 1 }}>
               {owner.revealed ? (
-                <Flex h={400}>
-                  <PieChart
-                    animate
-                    label={({ dataEntry }) => dataEntry.title}
-                    labelStyle={{
-                      fill: 'white'
-                    }}
-                    data={cards
-                      .filter((c) =>
-                        presenceData.some((d) => d.data.vote === c[0])
-                      )
-                      .map((c) => ({
-                        title: c[0],
-                        value: presenceData.filter((d) => d.data.vote === c[0])
-                          .length,
-                        color: c[1]
-                      }))}
-                  />
+                <Flex h={400} gap="xl">
+                  <PieChart data={userData} cards={cards} />
                 </Flex>
               ) : (
                 <Flex wrap="wrap" sx={{ boxSizing: 'border-box' }}>
@@ -323,16 +267,16 @@ export default function PlanningPoker() {
                     const isSelected = user.vote === c[0];
                     return (
                       <Center
-                        w={`${100 / (matches ? 4 : 6)}%`}
                         h={200}
                         p={5}
                         key={index}
                         fz={40}
+                        className={styles.classes.pointCard}
                       >
                         <PointCard
                           w={'100%'}
                           h={'100%'}
-                          bg={isSelected ? 'teal.9' : 'gray.2'}
+                          bg={isSelected ? 'teal.7' : 'gray.2'}
                           onClick={() => handleVote(c[0])}
                         >
                           <Text color={isSelected ? 'white' : 'gray.7'}>
@@ -344,11 +288,11 @@ export default function PlanningPoker() {
                   })}
                 </Flex>
               )}
-              {ownerRef.current ? (
+              {user.isOwner ? (
                 <Center mt={30}>
                   <Button
                     size="lg"
-                    color="teal.9"
+                    color="teal.7"
                     onClick={() => (owner.revealed ? handleReset() : reveal())}
                     disabled={noneHasVoted}
                   >
