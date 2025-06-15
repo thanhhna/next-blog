@@ -37,7 +37,7 @@
     "highlight.js": "^11.8.0",
     "jquery": "^3.6.0",
     "markdown-it": "^13.0.1",
-    "next": "^13.4.2",
+    "next": "^14.2.30",
     "prettier": "^2.5.1",
     "random": "^3.0.6",
     "random-chars": "^1.0.8",
