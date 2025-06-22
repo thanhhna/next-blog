@@ -3,7 +3,7 @@ import cn from '@lib/classnames';
 import { BoxData, Position } from './types';
 import Box from './Box';
 import styles from './Sequence.module.scss';
-import utilsStyle from 'styles/utils.module.scss';
+import utilsStyle from '@styles/utils.scss';
 
 const MILLISECOND = 1000;
 

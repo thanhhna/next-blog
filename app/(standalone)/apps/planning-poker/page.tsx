@@ -1,6 +1,5 @@
-import React from 'react';
-import PlanningPoker from '@features/planningPoker/PlanningPoker';
 import { Metadata } from 'next';
+import PlanningPokerView from './PlanningPokerView';
 
 export const metadata: Metadata = {
   title: 'Planning Poker',
@@ -8,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default async function PlanningPokerApp() {
-  return <PlanningPoker />;
+  return <PlanningPokerView />;
 }

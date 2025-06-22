@@ -1,18 +1,24 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "eslint:recommended",
-    "react-app",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
   "rules": {
     "semi": "error",
-    "quotes": ["error", "single", {
-      "allowTemplateLiterals": true
-    }],
-    "react/react-in-jsx-scope": 0
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "react/react-in-jsx-scope": 0,
+    "@typescript-eslint/no-explicit-any": 0
   }
 }

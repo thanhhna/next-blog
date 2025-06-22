@@ -1,26 +1,24 @@
 import React from 'react';
 import Link from 'next/link';
-import cn from '@lib/classnames';
 
 import { getSortedPostsData, PostData } from '@lib/posts';
 import Date from '@components/Date';
-import utilStyles from '@styles/utils.module.scss';
 
 export default async function Home(): Promise<React.ReactNode> {
   const allPostsData: PostData[] = await getSortedPostsData();
   return (
-    <section className={cn(utilStyles.headingMd)}>
-      <h2 className={utilStyles.headingLg}>Posts</h2>
-      <ul className={utilStyles.list}>
+    <section className="flex flex-col gap-4">
+      <h2 className="text-stone-600 font-bold text-2xl">Posts</h2>
+      <ul className="flex flex-col gap-4">
         {allPostsData.map(({ id, date, title }) => (
-          <li className={cn(utilStyles.listItem)} key={id}>
+          <li>
             <Link href="/posts/[id]" as={`/posts/${id}`}>
-              <button className={cn(utilStyles.link, utilStyles.headingMd)}>
+              <button className="cursor-pointer font-bold">
                 {title}
               </button>
             </Link>
             <br />
-            <small className={utilStyles.lightText}>
+            <small className="text-stone-500">
               <Date dateString={date} />
             </small>
           </li>

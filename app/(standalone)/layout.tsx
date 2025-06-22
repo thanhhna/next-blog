@@ -1,19 +1,16 @@
 import React from 'react';
-import RootStyleRegistry from '@lib/emotion';
-import Clicky from '@lib/clicky';
+
+import 'styles/global.scss';
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}) {
   return (
-    <html>
-      <head>
-        <Clicky />
-      </head>
+    <html lang="en">
       <body>
-        <RootStyleRegistry>{children}</RootStyleRegistry>
+        {children}
       </body>
     </html>
   );

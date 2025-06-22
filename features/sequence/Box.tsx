@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from '@lib/classnames';
 import styles from './Sequence.module.scss';
-import utilsStyles from 'styles/utils.module.scss';
+import utilsStyles from '@styles/utils.scss';
 import { Position, Coordinate } from './types';
 import { StyleObject } from '@utils/commonType';
 

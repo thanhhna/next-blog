@@ -1,60 +1,46 @@
 import React from 'react';
 import Link from 'next/link';
-import cn from '@lib/classnames';
 import navs from '@lib/navs';
-import styles from './Layout.module.scss';
-import utilStyles from '@styles/utils.module.scss';
 import { Metadata } from 'next';
-import '@styles/global.scss';
 import Image from 'next/image';
-import RootStyleRegistry from '@lib/emotion';
-import Clicky from '@lib/clicky';
+
+import 'styles/global.scss';
 
 const name = 'Thanh';
 export const metadata: Metadata = {
   title: 'Green season',
-  description: `Thanh Nguyen's personal site.`
+  description: `Hi`
 };
 
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}) {
   return (
-    <html>
-      <head>
-        <Clicky />
-      </head>
+    <html lang="en">
       <body>
-        <div className={styles.container}>
-          <main className={styles.main}>
-            <nav className={cn(styles.nav, utilStyles.textCenter)}>
+        <div>
+          <main className="flex p-12 gap-12">
+            <nav className="w-40 flex-none flex items-center flex-col gap-5">
               <Image
                 src="/images/profile.jpg"
-                className={cn(styles.headerHomeImage, utilStyles.borderCircle)}
                 alt={name}
                 width="100"
                 height="100"
               />
-              <div className={styles.link}>
+              <div className="flex flex-col gap-5 font-bold">
                 {navs.map((nav) => (
                   <Link href={nav.path} key={nav.path}>
-                    <button
-                      className={cn(
-                        utilStyles.textBold,
-                        utilStyles.link,
-                        utilStyles.headingNm
-                      )}
-                    >
+                    <button className="cursor-pointer text-teal-700">
                       {nav.name}
                     </button>
                   </Link>
                 ))}
               </div>
             </nav>
-            <div className={styles.content}>
-              <RootStyleRegistry>{children}</RootStyleRegistry>
+            <div className="flex-1">
+              {children}
             </div>
           </main>
         </div>

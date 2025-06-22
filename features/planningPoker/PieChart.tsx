@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PieChart as MinimalPieChart } from 'react-minimal-pie-chart';
-import { UserData } from '@features/planningPoker/PlanningPoker';
+import { UserData } from './types';
 
 export default function PieChart({
   data,

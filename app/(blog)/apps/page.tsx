@@ -1,9 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import cn from '@lib/classnames';
-
-import styles from './index.module.scss';
-import utilStyles from '@styles/utils.module.scss';
 
 const apps = [
   // {
@@ -26,24 +22,17 @@ const apps = [
 
 export default function Apps() {
   return (
-    <div className={styles.apps}>
-      <h2 className={utilStyles.headingLg}>Apps</h2>
-      <p>I occasionally build small apps. Check them out.</p>
-      <ul className={utilStyles.list}>
-        {apps.map((app) => (
-          <li className={utilStyles.listItem} key={app.path}>
+    <div className="flex flex-col gap-4">
+      <h2 className="font-bold text-stone-600 text-2xl">Apps</h2>
+      <ul>
+        {apps.map((app, index) => (
+          <li className="flex flex-col gap-4" key={index}>
             <Link href={`/apps/${app.path}`} as={`/apps/${app.path}`}>
-              <button
-                className={cn(
-                  utilStyles.link,
-                  utilStyles.headingMd,
-                  styles.link
-                )}
-              >
+              <button className="cursor-pointer font-bold">
                 {app.name}
               </button>
             </Link>
-            <p>{app.description}</p>
+            <p className="text-stone-500">{app.description}</p>
           </li>
         ))}
       </ul>
