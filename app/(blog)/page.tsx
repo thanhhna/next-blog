@@ -13,9 +13,7 @@ export default async function Home(): Promise<React.ReactNode> {
         {allPostsData.map(({ id, date, title }) => (
           <li>
             <Link href="/posts/[id]" as={`/posts/${id}`}>
-              <button className="cursor-pointer font-bold">
-                {title}
-              </button>
+              <button className="cursor-pointer font-bold">{title}</button>
             </Link>
             <br />
             <small className="text-stone-500">

@@ -5,7 +5,7 @@ export default function Date({
   dateString
 }: {
   dateString: string;
-}): JSX.Element {
+}): React.ReactNode {
   const date = parseISO(dateString);
   return <time dateTime={dateString}>{format(date, 'yyyy-MM-dd')}</time>;
 }

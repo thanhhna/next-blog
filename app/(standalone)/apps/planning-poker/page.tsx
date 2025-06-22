@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import PlanningPokerView from './PlanningPokerView';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Planning Poker',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PlanningPokerApp() {
-  return <PlanningPokerView />;
+  return (
+    <Suspense>
+      <PlanningPokerView />
+    </Suspense>
+  );
 }

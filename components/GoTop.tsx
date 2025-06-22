@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './GoTop.module.scss';
 
-export default function GoTop(): JSX.Element | null {
+export default function GoTop(): React.ReactNode | null {
   const initVisible = typeof window !== 'undefined' && window.scrollY > 0;
   const [isVisible, setIsVisible] = useState(initVisible);
 

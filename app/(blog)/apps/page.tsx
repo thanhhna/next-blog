@@ -28,9 +28,7 @@ export default function Apps() {
         {apps.map((app, index) => (
           <li className="flex flex-col gap-4" key={index}>
             <Link href={`/apps/${app.path}`} as={`/apps/${app.path}`}>
-              <button className="cursor-pointer font-bold">
-                {app.name}
-              </button>
+              <button className="cursor-pointer font-bold">{app.name}</button>
             </Link>
             <p className="text-stone-500">{app.description}</p>
           </li>

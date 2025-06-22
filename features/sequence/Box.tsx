@@ -1,7 +1,4 @@
 import React from 'react';
-import cn from '@lib/classnames';
-import styles from './Sequence.module.scss';
-import utilsStyles from '@styles/utils.scss';
 import { Position, Coordinate } from './types';
 import { StyleObject } from '@utils/commonType';
 
@@ -18,9 +15,8 @@ export default function Box({
   style,
   contentStyle,
   data,
-  onClick,
-  checked
-}: BoxProps): JSX.Element {
+  onClick
+}: BoxProps): React.ReactNode {
   function handleClick(event: React.MouseEvent) {
     if (event.clientX === 0 || event.clientY === 0) {
       return;
@@ -32,17 +28,10 @@ export default function Box({
   }
 
   return (
-    <div className={styles.box} style={style}>
-      <div className={cn(styles.dot)}>
+    <div style={style}>
+      <div>
         {data !== undefined && (
-          <span
-            style={contentStyle}
-            onClick={handleClick}
-            className={cn(
-              checked ? styles.checked : '',
-              !checked ? utilsStyles.pointer : ''
-            )}
-          >
+          <span style={contentStyle} onClick={handleClick}>
             {data.value + 1}
           </span>
         )}

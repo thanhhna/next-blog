@@ -3,7 +3,7 @@ import React from 'react';
 import Board from './Board';
 import { Mark } from './types';
 
-export default function Gomoku(): JSX.Element {
+export default function Gomoku(): React.ReactNode {
   return (
     <Board
       userMark={Mark.x}

@@ -6,7 +6,6 @@ import range from 'range';
 import random from 'random';
 import Board from './Board';
 import { Coordinate, BoxData, Position } from './types';
-import styles from './Sequence.module.scss';
 
 const GRID_WIDTH = isMobileOnly ? 40 : 70;
 const RANDOM_GAP = isMobileOnly ? 10 : 20;
@@ -67,7 +66,7 @@ export default function Sequence({
   onFinish,
   onStart,
   className = ''
-}: SequenceProps): JSX.Element {
+}: SequenceProps): React.ReactNode {
   const [sequencePositions, setSequencePositions] = useState<Position[]>([]);
   const [gameMode, setGameMode] = useState<GameMode>(MODE[0]);
   const [gridSize, setGridSize] = useState({ col: 0, row: 0 });
@@ -163,7 +162,7 @@ export default function Sequence({
   }
 
   return (
-    <div className={cn(styles.container, className)}>
+    <div className={cn(className)}>
       <div ref={containerRef}>
         <Board
           timeLimit={gameMode.timeLimit}

@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import cn from '@lib/classnames';
 import { BoxData, Position } from './types';
 import Box from './Box';
-import styles from './Sequence.module.scss';
-import utilsStyle from '@styles/utils.scss';
 
 const MILLISECOND = 1000;
 
@@ -24,7 +22,7 @@ enum GameStatus {
   won
 }
 
-export default function Board(props: BoardProps): JSX.Element {
+export default function Board(props: BoardProps): React.ReactNode {
   const {
     boxesData,
     gridWidth,
@@ -137,7 +135,7 @@ export default function Board(props: BoardProps): JSX.Element {
       message = <p>You won :)</p>;
       break;
     case GameStatus.lost:
-      message = <p className={styles.lost}>You lost :(</p>;
+      message = <p>You lost :(</p>;
       break;
     default:
       break;
@@ -149,21 +147,19 @@ export default function Board(props: BoardProps): JSX.Element {
   return (
     <>
       {gameStatus !== GameStatus.playing && (
-        <div className={styles.overlay}>
-          <div className={styles.message}>{message}</div>
-          <button onClick={handleStartGame} className={utilsStyle.btn}>
+        <div>
+          <div>{message}</div>
+          <button onClick={handleStartGame}>
             {gameStatus === GameStatus.idle ? 'Start' : 'Play again'}
           </button>
         </div>
       )}
       {gameStatus === GameStatus.playing && (
         <>
-          <div className={styles.controlBoard}>
-            <div className={cn(styles.timer, utilsStyle.primaryText)}>
-              Time: {timeLeft}s
-            </div>
+          <div>
+            <div>Time: {timeLeft}s</div>
           </div>
-          <div className={styles.board}>{boxes}</div>
+          <div>{boxes}</div>
         </>
       )}
     </>

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { getAllPostIds, getPostData } from '@lib/posts';
 import Date from '@components/Date';
 
@@ -7,7 +8,11 @@ async function generateStaticParams() {
   return allPosts;
 }
 
-export default async function Post({params}: {params: any}): Promise<React.ReactNode> {
+export default async function Post({
+  params
+}: {
+  params: any;
+}): Promise<React.ReactNode> {
   const { id } = await params;
   const postData = await getPostData(id);
   return (

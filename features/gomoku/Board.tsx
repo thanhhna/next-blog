@@ -27,7 +27,7 @@ interface BoardProps {
   score: Score;
 }
 
-export default function Board(props: BoardProps): JSX.Element {
+export default function Board(props: BoardProps): React.ReactNode {
   const firstLoad = useRef(true);
 
   useEffect(() => {

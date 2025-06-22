@@ -3,7 +3,6 @@ import Link from 'next/link';
 import navs from '@lib/navs';
 import { Metadata } from 'next';
 import Image from 'next/image';
-
 import 'styles/global.scss';
 
 const name = 'Thanh';
@@ -39,9 +38,7 @@ export default function RootLayout({
                 ))}
               </div>
             </nav>
-            <div className="flex-1">
-              {children}
-            </div>
+            <div className="flex-1">{children}</div>
           </main>
         </div>
       </body>

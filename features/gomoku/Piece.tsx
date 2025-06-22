@@ -12,7 +12,7 @@ interface PieceProps {
   isUserTurn: boolean;
 }
 
-export default function Piece(props: PieceProps): JSX.Element {
+export default function Piece(props: PieceProps): React.ReactNode {
   const { occupyingMark = Mark.EMPTY } = props;
 
   const [hoverMark, setHoverMark] = useState(Mark.EMPTY);
