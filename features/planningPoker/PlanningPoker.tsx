@@ -150,14 +150,14 @@ export default function PlanningPoker({ roomId, userId }: Props) {
               </div>
             </div>
           ) : (
-            <div className="md:flex md:flex-row py-2 px-1 gap-2 sm:flex-col">
+            <div className="flex md:flex-row py-2 px-1 xs:flex-col xs:gap-10">
               <div className="md:w-100 p-1 sm:w-full">
                 <PlayerList data={userData} revealed={revealed} />
               </div>
               <div className="md:flex-1 sm:w-full flex flex-col gap-10">
                 {revealed ? (
-                  <div className="flex justify-center">
-                    <div className="size-100 pt-10">
+                  <div className="flex justify-center p-1">
+                    <div className="size-100">
                       <PieChart data={userData} cards={cards} />
                     </div>
                   </div>
