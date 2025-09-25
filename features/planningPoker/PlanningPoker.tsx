@@ -67,14 +67,18 @@ export default function PlanningPoker({ roomId, userId }: Props) {
   }, [message]);
 
   const cards: [string, string][] = [
+    ['0.5', ''],
     ['1', '#FF6D60'],
     ['2', '#F7D060'],
     ['3', '#3C486B'],
     ['5', '#87CBB9'],
     ['8', '#D14D72'],
+    ['13', '#F9E080'],
+    ['21', '#3f7dc0ff'],
+    ['34','#58ac3aff'],
     ['∞', '#545B77'],
     ['?', '#E06469'],
-    ['☕', '#5C8984']
+    ['☕', '#5C8984'],
   ];
 
   function handleUsername() {
