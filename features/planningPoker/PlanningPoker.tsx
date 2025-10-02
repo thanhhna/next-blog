@@ -67,7 +67,7 @@ export default function PlanningPoker({ roomId, userId }: Props) {
   }, [message]);
 
   const cards: [string, string][] = [
-    ['0.5', ''],
+    ['0.5', '#8a69eaff'],
     ['1', '#FF6D60'],
     ['2', '#F7D060'],
     ['3', '#3C486B'],
@@ -75,10 +75,10 @@ export default function PlanningPoker({ roomId, userId }: Props) {
     ['8', '#D14D72'],
     ['13', '#F9E080'],
     ['21', '#3f7dc0ff'],
-    ['34','#58ac3aff'],
+    ['34', '#58ac3aff'],
     ['∞', '#545B77'],
     ['?', '#E06469'],
-    ['☕', '#5C8984'],
+    ['☕', '#5C8984']
   ];
 
   function handleUsername() {
@@ -108,10 +108,17 @@ export default function PlanningPoker({ roomId, userId }: Props) {
   }
 
   function handleVote(vote: string) {
-    setPresenceData({
-      ...user,
-      vote
-    });
+    if (user.vote === vote) {
+      setPresenceData({
+        ...user,
+        vote: null
+      });
+    } else {
+      setPresenceData({
+        ...user,
+        vote
+      });
+    }
   }
 
   function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -172,7 +179,7 @@ export default function PlanningPoker({ roomId, userId }: Props) {
                       return (
                         <div
                           key={index}
-                          className="sm:w-1/2 md:w-1/3 lg:w-1/4 sm:h-30 md:h-50 lg:h-70 cursor-pointer text-4xl p-1 xs:w-full xs:h-20"
+                          className="sm:w-1/2 md:w-1/3 lg:w-1/4 sm:h-30 md:h-30 lg:h-50 cursor-pointer text-4xl p-1 xs:w-full xs:h-20"
                           onClick={() => handleVote(c[0])}
                         >
                           <div
