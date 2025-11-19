@@ -9,7 +9,7 @@ export default function PieChart({
   cards
 }: {
   data: UserData[];
-  cards: [string, string][];
+  cards: [string, string, string?][];
 }) {
   const pieChartData = cards
     .filter((c) => data.some((d) => d.vote === c[0]))
