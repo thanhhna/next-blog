@@ -12,6 +12,7 @@ import {
   usePresence,
   usePresenceListener
 } from 'ably/react';
+import { IconLoader } from '@tabler/icons-react';
 
 interface Props {
   roomId: string;
@@ -21,6 +22,7 @@ interface Props {
 export default function PlanningPoker({ roomId, userId }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [revealed, setRevealed] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
   const initialData: UserData = {
     username: '',
@@ -35,6 +37,16 @@ export default function PlanningPoker({ roomId, userId }: Props) {
   const { presenceData } = usePresenceListener(roomId);
   const { publish } = useChannel(roomId, (message) => setMessage(message));
   const [connectionState, setConnectionState] = useState(ably.connection.state);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentState = ably.connection.state;
+      if (currentState !== connectionState) {
+        setConnectionState(currentState);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [ably, connectionState]);
 
   const userData = presenceData
     .sort((a, b) => (a.data.username > b.data.username ? 1 : -1))
@@ -66,7 +78,13 @@ export default function PlanningPoker({ roomId, userId }: Props) {
     }
   }, [message]);
 
-  const cards: [string, string][] = [
+  useEffect(() => {
+    if (initializing && presenceData.length > 0) {
+      setInitializing(false);
+    }
+  }, [presenceData]);
+
+  const cards: [string, string, string?][] = [
     ['0.5', '#8a69eaff'],
     ['1', '#FF6D60'],
     ['2', '#F7D060'],
@@ -75,10 +93,10 @@ export default function PlanningPoker({ roomId, userId }: Props) {
     ['8', '#D14D72'],
     ['13', '#F9E080'],
     ['21', '#3f7dc0ff'],
-    ['34', '#58ac3aff'],
-    ['∞', '#545B77'],
-    ['?', '#E06469'],
-    ['☕', '#5C8984']
+    ['✅', '#58ac3aff', 'Ok with everything'],
+    ['♾️', '#545B77', 'Infinity'],
+    ['❓', '#E06469', 'Not sure'],
+    ['☕', '#5C8984', 'Just want a coffee']
   ];
 
   function handleUsername() {
@@ -129,6 +147,14 @@ export default function PlanningPoker({ roomId, userId }: Props) {
 
   const noneHasVoted = userData.every(({ vote }) => !vote);
 
+  if (initializing) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <IconLoader className="inline mr-2 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="h-20 px-2 border-b-1 border-gray-200 flex text-teal-600 text-2xl font-bold items-center">
@@ -161,11 +187,11 @@ export default function PlanningPoker({ roomId, userId }: Props) {
               </div>
             </div>
           ) : (
-            <div className="flex md:flex-row py-2 px-1 xs:flex-col xs:gap-10">
-              <div className="md:w-100 p-1 sm:w-full">
+            <div className="flex sm:flex-row py-2 px-1 flex-col xs:gap-5">
+              <div className="md:w-100 p-1 sm:w-[35%] md:w-[30%]">
                 <PlayerList data={userData} revealed={revealed} />
               </div>
-              <div className="md:flex-1 sm:w-full flex flex-col gap-10">
+              <div className="md:flex-1 flex flex-col gap-10">
                 {revealed ? (
                   <div className="flex justify-center p-1">
                     <div className="size-100">
@@ -173,14 +199,15 @@ export default function PlanningPoker({ roomId, userId }: Props) {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex sm:flex-row xs:flex-col flex-wrap">
+                  <div className="flex flex-row flex-wrap">
                     {cards.map((c, index) => {
                       const isSelected = user.vote === c[0];
                       return (
                         <div
                           key={index}
-                          className="sm:w-1/2 md:w-1/3 lg:w-1/4 sm:h-30 md:h-30 lg:h-50 cursor-pointer text-4xl p-1 xs:w-full xs:h-20"
+                          className="sm:w-1/3 md:w-1/3 lg:w-1/4 sm:h-30 md:h-30 lg:h-50 cursor-pointer text-4xl p-1 w-1/3 h-20"
                           onClick={() => handleVote(c[0])}
+                          title={c[2] ?? ''}
                         >
                           <div
                             className={[
