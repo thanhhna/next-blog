@@ -28,7 +28,7 @@
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "jquery": "^3.7.1",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.1.1",
     "next": "^15.5.9",
     "prettier": "^3.5.3",
     "random": "^5.4.0",
